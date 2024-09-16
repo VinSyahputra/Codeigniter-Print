@@ -35,20 +35,20 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label for="email">Receipt No</label>
-                                        <input type="email" name="email" id="email" class="form-control form-control-sm">
+                                        <label for="receipt">Receipt No</label>
+                                        <input type="text" name="receipt" id="receipt" class="form-control form-control-sm">
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label for="phone">Order ID</label>
-                                        <input type="text" name="phone" id="phone" class="form-control form-control-sm">
+                                        <label for="order_id">Order ID</label>
+                                        <input type="text" name="order_id" id="order_id" class="form-control form-control-sm">
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label for="phone">Collected By</label>
-                                        <input type="text" name="phone" id="phone" class="form-control form-control-sm">
+                                        <label for="collected_by">Collected By</label>
+                                        <input type="text" name="collected_by" id="collected_by" class="form-control form-control-sm">
                                     </div>
                                 </div>
                             </div>
@@ -69,9 +69,9 @@
                                 </thead>
                                 <tbody id="containerItem">
                                     <tr>
-                                        <td><input type="text" name="item[]" class="form-control form-control-sm"></td>
-                                        <td><input type="number" name="quantity[]" class="form-control form-control-sm"></td>
-                                        <td><input type="number" name="price[]" class="form-control form-control-sm"></td>
+                                        <td><input type="text" name="item" class="form-control form-control-sm"></td>
+                                        <td><input type="number" name="quantity" class="form-control form-control-sm"></td>
+                                        <td><input type="number" name="price" class="form-control form-control-sm"></td>
                                         <td width="1%" class="text-center">
                                             <span class="btn-delete btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></span>
                                         </td>
@@ -80,6 +80,12 @@
                             </table>
                             <div class="col-12">
                                 <button type="button" class="btn btn-outline-primary w-100" id="addItem"><i class="fas fa-plus"></i> Add Item</button>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="cash">Cash</label>
+                                    <input type="text" name="cash" id="cash" class="form-control form-control-sm">
+                                </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <button type="button" id="btn-print" class="btn btn-success ms-auto"><i class="fas fa-print"></i> Print</button>
@@ -112,9 +118,9 @@
                     });
                     jsonObj.items.push(item);
                 });
-                delete jsonObj['item[]'];
-                delete jsonObj['quantity[]'];
-                delete jsonObj['price[]'];
+                delete jsonObj['item'];
+                delete jsonObj['quantity'];
+                delete jsonObj['price'];
 
                 postData(jsonObj, '/print', (res) => {
                     if (res.respon) {
@@ -140,9 +146,9 @@
             // Create HTML for new row
             var newRow = `
                 <tr>
-                    <td><input type="text" name="item[]" class="form-control form-control-sm"></td>
-                    <td><input type="number" name="quantity[]" class="form-control form-control-sm"></td>
-                    <td><input type="number" name="price[]" class="form-control form-control-sm"></td>
+                    <td><input type="text" name="item" class="form-control form-control-sm"></td>
+                    <td><input type="number" name="quantity" class="form-control form-control-sm"></td>
+                    <td><input type="number" name="price" class="form-control form-control-sm"></td>
                     <td width="1%" class="text-center">
                         <span class="btn-delete btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></span>
                     </td>

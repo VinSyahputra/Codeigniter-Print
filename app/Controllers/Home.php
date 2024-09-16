@@ -4,8 +4,10 @@ namespace App\Controllers;
 
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
 
 class Home extends BaseController
 {
@@ -19,88 +21,189 @@ class Home extends BaseController
 
 
         $profile = CapabilityProfile::load("simple");
-        $connector = new NetworkPrintConnector("/home/CUPS-BRF-Printer");
+        // $connector = new NetworkPrintConnector("/dev/rfcomm0");
+        $connector = new FilePrintConnector("/dev/rfcomm0");
         $printer = new Printer($connector);
+        // Load the image
+        $imgLogo = EscposImage::load("assets/boga.png", false);
+        $imgTwitter = EscposImage::load("assets/twitter.png", false);
+        $imgInstagram = EscposImage::load("assets/ig.png", false);
+        $imgFacebook = EscposImage::load("assets/fb.png", false);
+        $imgWebsite = EscposImage::load("assets/website.png", false);
 
-        $printer->setPrintLeftMargin(10);
-        $printer->text("Hello World!\n");
-        $printer->setUnderline();
 
+        // $printer->setUnderline(false);
+        // $printer->setJustification(Printer::JUSTIFY_CENTER); // Center text
+        // $printer->bitImage($imgLogo);
+        // $printer->text("\n");
+        // $printer->text("\n");
+        // $printer->text("\n");
+        // $printer->setEmphasis(true); // Enable bold text
+        // $printer->text("Foodcourt UMB Boga\n");
+        // $printer->setEmphasis(false);
+        // $printer->text("Gedung Plaza Bintang, Kampus Terpadu Universitas Muhammadiyah Yogyakarta. Jl. Brawijaya, Tamantirto, Kab. Bantul, DI Yogyakarta, 55183\n 081327211306 \n\n");
+
+        // $printer->text(str_repeat('-', 32) . "\n");
+        // $printer->setEmphasis(true);
+        // $printer->text("Queue No:" . $formData->queue . "\n");
+        // $printer->setEmphasis(false);
+        // $printer->text(str_repeat('-', 32) . "\n");
+        // $printer->text("\n");
+        // $this->justifyLeftRight($printer, date_format(date_create($formData->date), "d M Y"), date_format(date_create($formData->date), "H:i"), 32);
+        // $this->justifyLeftRight($printer, 'Receipt Number', $formData->receipt, 32);
+        // $this->justifyLeftRight($printer, 'Order ID', $formData->order_id, 32);
+        // $this->justifyLeftRight($printer, 'Collected By', $formData->collected_by, 32);
+        // $printer->text(str_repeat('-', 32) . "\n");
+        // $printer->setJustification(Printer::JUSTIFY_LEFT);
+        // $total = 0;
+        // foreach ($formData->items as $item) {
+        //     $printer->setEmphasis(true);
+        //     $printer->text($item->item . "\n");
+        //     $printer->setEmphasis(false);
+        //     $this->justifyLeftRight($printer, $item->quantity . 'X   ' . '@' . number_format($item->price, 0, ',', '.'), number_format($item->quantity * $item->price, 0, ',', '.'), 32);
+        //     $total += $item->quantity * $item->price;
+        // }
+        // $printer->text(str_repeat('-', 32) . "\n");
+        // $this->justifyLeftRight($printer, 'Subtotal', 'Rp ' . number_format($total, 0, ',', '.'), 32);
+        // $printer->text(str_repeat('-', 32) . "\n");
+        // $printer->setEmphasis(true);
+        // $this->justifyLeftRight($printer, 'Total', 'Rp ' . number_format($total, 0, ',', '.'), 32);
+        // $printer->setEmphasis(false);
+        // $printer->text(str_repeat('-', 32) . "\n");
+        // $this->justifyLeftRight($printer, 'Cash', 'Rp ' . number_format($formData->cash, 0, ',', '.'), 32);
+        // $this->justifyLeftRight($printer, 'Change', 'Rp ' . number_format($formData->cash - $total, 0, ',', '.'), 32);
+        // $printer->text(str_repeat('-', 32) . "\n");
+
+        $printer->setFont(Printer::FONT_C);
+        $spaces = str_repeat(' ', 5);
+        $printer->setJustification(Printer::JUSTIFY_LEFT);
+        // $printer->bitImage($imgWebsite);
+        // $printer->bitImage($imgFacebook);
+        $inlineImageWebsite = $this->inlineImage2($imgWebsite, $connector);
+        $inlineImageWebsite;
+        $printer->text($spaces . "www.umb-boga.com\n");
+
+        // $inlineImageFacebook = $this->inlineImage($imgFacebook, $connector);
+        // $inlineImageFacebook;
+        // $printer->text($spaces . "umb.boga\n");
+
+        // $inlineImageTwitter = $this->inlineImage($imgTwitter, $connector);
+        // $inlineImageTwitter;
+        // $printer->text($spaces . "umb_boga\n");
+
+        // $inlineImageInstagram = $this->inlineImage($imgInstagram, $connector);
+        // $inlineImageInstagram;
+        // $printer->text($spaces . "umb_boga&cafe_1912_\n");
+
+        // $printer->bitImage($imgInstagram);
+        $printer->setFont(Printer::FONT_A);
+        $printer->text(str_repeat('-', 32) . "\n");
+
+        $printer->setEmphasis(true);
+        $printer->text("Notes \n");
+        $printer->text("Beyond The Taste\n");
+        $printer->text("Kritik & Saran : 081228288032 \n");
+        $printer->text("\n");
         $printer->cut();
         $printer->close();
 
-        return view('index');
+        // return view('index');
     }
-
-    function buatBaris1Kolom($kolom1)
+    function justifyLeftRight($printer, $leftText, $rightText, $lineWidth)
     {
-        // Mengatur lebar setiap kolom (dalam satuan karakter)
-        $lebar_kolom_1 = 35;
+        // Calculate the number of spaces to add between left and right text
+        $leftTextLength = strlen($leftText);
+        $rightTextLength = strlen($rightText);
 
-        // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n 
-        $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
-
-        // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
-        $kolom1Array = explode("\n", $kolom1);
-
-        // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
-        $jmlBarisTerbanyak = count($kolom1Array);
-
-        // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
-        $hasilBaris = array();
-
-        // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
-        for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
-
-            // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
-            $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-
-            // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
-            $hasilBaris[] = $hasilKolom1;
+        // Ensure that the total length fits within the line width
+        if ($leftTextLength + $rightTextLength > $lineWidth) {
+            // If it exceeds, cut the right text
+            $rightText = substr($rightText, 0, $lineWidth - $leftTextLength);
         }
 
-        // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-        return implode($hasilBaris, "\n") . "\n";
+        // Calculate the number of spaces to pad
+        $spaces = $lineWidth - $leftTextLength - $rightTextLength;
+
+        // Combine left text, spaces, and right text
+        $line = $leftText . str_repeat(' ', $spaces) . $rightText;
+
+        // Print the line
+        $printer->text($line . "\n");
     }
 
-    function buatBaris3Kolom($kolom1, $kolom2, $kolom3)
+    function drawTextWithNegativeMargin($imagePath, $text)
     {
-        // Mengatur lebar setiap kolom (dalam satuan karakter)
-        $lebar_kolom_1 = 11;
-        $lebar_kolom_2 = 11;
-        $lebar_kolom_3 = 11;
+        // Load the existing image
+        $img = imagecreatefrompng($imagePath);
 
-        // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n 
-        $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
-        $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
-        $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
+        // Get the dimensions of the image
+        $imgWidth = imagesx($img);
+        $imgHeight = imagesy($img);
 
-        // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
-        $kolom1Array = explode("\n", $kolom1);
-        $kolom2Array = explode("\n", $kolom2);
-        $kolom3Array = explode("\n", $kolom3);
+        // Create a new blank image with the same dimensions
+        $combinedImg = imagecreatetruecolor($imgWidth, $imgHeight);
 
-        // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
-        $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array));
+        // Set a white background
+        $white = imagecolorallocate($combinedImg, 255, 255, 255);
+        imagefill($combinedImg, 0, 0, $white);
 
-        // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
-        $hasilBaris = array();
+        // Copy the original image onto the combined image
+        imagecopy($combinedImg, $img, 0, 0, 0, 0, $imgWidth, $imgHeight);
 
-        // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
-        for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+        // Set the text color to black
+        $black = imagecolorallocate($combinedImg, 0, 0, 0);
 
-            // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
-            $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
-            // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
-            $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
+        // Define built-in font and simulate negative margin
+        $font = 5; // Size 5 (largest built-in font)
+        $textX = 10; // X position for the text
+        $textY = 50; // Y position for the text
 
-            $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
+        // Apply negative margin (move text up)
+        $negativeMargin = -10; // Move text 10 pixels upwards
+        $adjustedTextY = $textY + $negativeMargin;
 
-            // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
-            $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3;
+        // Draw the text with adjusted Y position
+        imagestring($combinedImg, $font, $textX, $adjustedTextY, $text, $black);
+
+        // Output or save the combined image
+        header('Content-Type: image/png');
+        imagepng($combinedImg);
+
+        // Free up memory
+        imagedestroy($img);
+        imagedestroy($combinedImg);
+    }
+
+    public function inlineImage(EscposImage $img, $printer)
+    {
+        $connector = $printer;
+        $size = Printer::IMG_DEFAULT;
+        $highDensityVertical = ($size & Printer::IMG_DOUBLE_HEIGHT) != Printer::IMG_DOUBLE_HEIGHT;
+        $highDensityHorizontal = ($size & Printer::IMG_DOUBLE_WIDTH) != Printer::IMG_DOUBLE_WIDTH;
+        // Header and density code (0, 1, 32, 33) re-used for every line
+        $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
+        $colFormatData = $img->toColumnFormat($highDensityVertical);
+        $header = Printer::dataHeader(array($img->getWidth()), true);
+        foreach ($colFormatData as $line) {
+            // Print each line, double density etc for printing are set here also
+            $connector->write("\x1B" . "*" . chr($densityCode) . $header . $line);
+            break;
         }
+    }
 
-        // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-        return implode($hasilBaris, "\n") . "\n";
+    public function inlineImage2(EscposImage $img, $connector, $size = Printer::IMG_DEFAULT)
+    {
+        $connector = $connector;
+        $highDensityVertical = ! (($size & Printer::IMG_DOUBLE_HEIGHT) == Printer::IMG_DOUBLE_HEIGHT);
+        $highDensityHorizontal = ! (($size & Printer::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH);
+        // Header and density code (0, 1, 32, 33) re-used for every line
+        $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
+        $colFormatData = $img->toColumnFormat($highDensityVertical);
+        $header = Printer::dataHeader(array($img->getWidth()), true);
+        foreach ($colFormatData as $line) {
+            // Print each line, double density etc for printing are set here also
+            $connector->write(Printer::ESC . "*" . chr($densityCode) . $header . $line);
+            break;
+        }
     }
 }
